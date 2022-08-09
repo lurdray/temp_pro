@@ -62,29 +62,63 @@ def AddTemplateView(request):
 @permission_classes([IsAuthenticated])
 def AllTemplateView(request):
     if request.method == 'GET':
-        templates = Template.objects.filter(app_user__user=request.user).order_by("-pub_date")
+        try:
+            templates = Template.objects.filter(app_user__user=request.user).order_by("-pub_date")
 
-        serializer = TemplateSerializer(templates, many=True)
-        if serializer:
-            return Response(serializer.data)
+            serializer = TemplateSerializer(templates, many=True)
+            if serializer:
+                return Response(serializer.data)
 
-        else:
-            return HttpResponse(str("errors!"))
+            else:
+                return HttpResponse(str("errors!"))
 
+        except:
+            data = {
+            "status_lean": False,
+            "detail": "Not Successful",
+
+            }
+
+            serializer = StatusLeanSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def GetTemplateView(request, template_id):
     if request.method == 'GET':
-        template = Template.objects.get(id=template_id, app_user__user=request.user)
 
-        serializer = TemplateSerializer(template)
-        if serializer:
-            return Response(serializer.data)
+        try:
+            template = Template.objects.get(id=template_id, app_user__user=request.user)
 
-        else:
-            return HttpResponse(str("errors!"))
+            serializer = TemplateSerializer(template)
+            if serializer:
+                return Response(serializer.data)
+
+            else:
+                return HttpResponse(str("errors!"))
+
+        except:
+            data = {
+            "status_lean": False,
+            "detail": "Not Successful",
+
+            }
+
+            serializer = StatusLeanSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
@@ -93,29 +127,45 @@ def GetTemplateView(request, template_id):
 @permission_classes([IsAuthenticated])
 def UpdateTemplateView(request, template_id):
     if request.method == 'PUT':
-        template_name = request.data["template_name"]
-        subject = request.data["subject"]
-        body = request.data["body"]
+        try:
+            template_name = request.data["template_name"]
+            subject = request.data["subject"]
+            body = request.data["body"]
 
-        template = Template.objects.get(id=template_id, app_user__user=request.user)
-        template.template_name = template_name
-        template.subject = subject
-        template.body = body
-        template.save()
+            template = Template.objects.get(id=template_id, app_user__user=request.user)
+            template.template_name = template_name
+            template.subject = subject
+            template.body = body
+            template.save()
 
-        data = {
-            "status_lean": True,
-            "detail": "Successful",
+            data = {
+                "status_lean": True,
+                "detail": "Successful",
 
-        }
+            }
 
-        serializer = StatusLeanSerializer(data=data)
+            serializer = StatusLeanSerializer(data=data)
 
-        if serializer.is_valid():
-            #serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except:
+            data = {
+            "status_lean": False,
+            "detail": "Not Successful",
+
+            }
+
+            serializer = StatusLeanSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -125,21 +175,37 @@ def UpdateTemplateView(request, template_id):
 def DeleteTemplateView(request, template_id):
     if request.method == 'DELETE':
 
-        template = Template.objects.get(id=template_id, app_user__user=request.user)
-        template.status = False
-        template.save()
+        try:
+            template = Template.objects.get(id=template_id, app_user__user=request.user)
+            template.status = False
+            template.save()
 
-        data = {
-            "status_lean": True,
-            "detail": "Successful",
+            data = {
+                "status_lean": True,
+                "detail": "Successful",
 
-        }
+            }
 
-        serializer = StatusLeanSerializer(data=data)
+            serializer = StatusLeanSerializer(data=data)
 
-        if serializer.is_valid():
-            #serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except:
+            data = {
+            "status_lean": False,
+            "detail": "Not Successful",
+
+            }
+
+            serializer = StatusLeanSerializer(data=data)
+
+            if serializer.is_valid():
+                #serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
