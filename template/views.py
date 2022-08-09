@@ -1,5 +1,6 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from django.http import HttpResponse
@@ -8,61 +9,56 @@ from template.serializers import *
 from template.models import *
 
 
-
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def AddTemplateView(request):
     if request.method == 'POST':
 
-        auth_code = request.data["auth_code"]
+        app_user = AppUser.objects.get(id=1)
 
-        try:
-            app_user = AppUser.objects.get(auth_code=auth_code)
-        except:
-            app_user = None
+        template_name = request.data["template_name"]
+        subject = request.data["subject"]
+        body = request.data["body"]
 
-        if app_user:
-            template_name = request.data["template_name"]
-            subject = request.data["subject"]
-            body = request.data["body"]
+        template = Template.objects.create(app_user=app_user, template_name=template_name, subject=subject, body=body)
+        template.save()
 
-            template = Template.objects.create(app_user=app_user, template_name=template_name, subject=subject, body=body)
-            template.save()
+        data = {
+            "status_lean": True,
+            "detail": "Successful",
 
-            data = {
-                "status_lean": True,
-                "detail": "Successful",
+        }
 
-            }
+        serializer = StatusLeanSerializer(data=data)
 
-            serializer = StatusLeanSerializer(data=data)
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-            if serializer.is_valid():
-                #serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-        else:
+    else:
 
-            data = {
-            "status_lean": False,
-            "detail": "Not Successful",
+        data = {
+        "status_lean": False,
+        "detail": "Not Successful",
 
-            }
+        }
 
-            serializer = StatusLeanSerializer(data=data)
+        serializer = StatusLeanSerializer(data=data)
 
-            if serializer.is_valid():
-                #serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def AllTemplateView(request):
     if request.method == 'GET':
         templates = Template.objects.all().order_by("-pub_date")
@@ -77,6 +73,7 @@ def AllTemplateView(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def GetTemplateView(request, template_id):
     if request.method == 'GET':
         template = Template.objects.get(id=template_id)
@@ -91,108 +88,57 @@ def GetTemplateView(request, template_id):
 
 
 
-@api_view(['POST'])
-def UpdateTemplateView(request):
-    if request.method == 'POST':
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def UpdateTemplateView(request, template_id):
+    if request.method == 'PUT':
+        template_name = request.data["template_name"]
+        subject = request.data["subject"]
+        body = request.data["body"]
 
-        auth_code = request.data["auth_code"]
+        template = Template.objects.get(id=template_id)
+        template.template_name = template_name
+        template.subject = subject
+        template.body = body
+        template.save()
 
-        try:
-            app_user = AppUser.objects.get(auth_code=auth_code)
-        except:
-            app_user = None
+        data = {
+            "status_lean": True,
+            "detail": "Successful",
 
-        if app_user:
-            template_id = request.data["template_id"]
-            template_name = request.data["template_name"]
-            subject = request.data["subject"]
-            body = request.data["body"]
+        }
 
-            template = Template.objects.get(id=template_id)
-            template.template_name = template_name
-            template.subject = subject
-            template.body = body
-            template.save()
+        serializer = StatusLeanSerializer(data=data)
 
-            data = {
-                "status_lean": True,
-                "detail": "Successful",
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-            }
-
-            serializer = StatusLeanSerializer(data=data)
-
-            if serializer.is_valid():
-                #serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-        else:
-
-            data = {
-            "status_lean": False,
-            "detail": "Not Successful",
-
-            }
-
-            serializer = StatusLeanSerializer(data=data)
-
-            if serializer.is_valid():
-                #serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
 
-@api_view(['POST'])
-def DeleteTemplateView(request):
-    if request.method == 'POST':
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def DeleteTemplateView(request, template_id):
+    if request.method == 'DELETE':
 
-        auth_code = request.data["auth_code"]
+        template = Template.objects.get(id=template_id)
+        template.status = False
+        template.save()
 
-        try:
-            app_user = AppUser.objects.get(auth_code=auth_code)
-        except:
-            app_user = None
+        data = {
+            "status_lean": True,
+            "detail": "Successful",
 
-        if app_user:
-            template_id = request.data["template_id"]
+        }
 
-            template = Template.objects.get(id=template_id)
-            template.status = False
-            template.save()
+        serializer = StatusLeanSerializer(data=data)
 
-            data = {
-                "status_lean": True,
-                "detail": "Successful",
+        if serializer.is_valid():
+            #serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-            }
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            serializer = StatusLeanSerializer(data=data)
-
-            if serializer.is_valid():
-                #serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-        else:
-
-            data = {
-            "status_lean": False,
-            "detail": "Not Successful",
-
-            }
-
-            serializer = StatusLeanSerializer(data=data)
-
-            if serializer.is_valid():
-                #serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
