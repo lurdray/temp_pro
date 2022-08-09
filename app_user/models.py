@@ -7,7 +7,7 @@ from django.utils import timezone
 
 class AppUser(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	auth_code = models.CharField(max_length=20, default="null")
+	auth_code = models.TextField(default="null")
 
 	first_name = models.CharField(max_length=20, default="null")
 	last_name = models.CharField(max_length=20, default="null")

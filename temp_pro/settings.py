@@ -80,6 +80,12 @@ WSGI_APPLICATION = 'temp_pro.wsgi.application'
 #SESSION_SERIALIZER = 'django_mongoengine.sessions.BSONSerializer'
 
 
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=10)
+}
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',

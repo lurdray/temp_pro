@@ -11,6 +11,7 @@ from app_user.serializers import *
 
 
 
+
 @api_view(['POST'])
 def RegisterView(request):
     if request.method == 'POST':
@@ -22,6 +23,7 @@ def RegisterView(request):
         last_name =request.data["last_name"]
         email =request.data["email"]
         password = request.data["password"]
+
 
 
         try:

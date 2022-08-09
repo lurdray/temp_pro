@@ -8,13 +8,14 @@ from django.http import HttpResponse
 from template.serializers import *
 from template.models import *
 
+from rest_framework_simplejwt.backends import TokenBackend
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def AddTemplateView(request):
     if request.method == 'POST':
 
-        app_user = AppUser.objects.get(id=1)
+        app_user = AppUser.objects.get(user__username=request.user)
 
         template_name = request.data["template_name"]
         subject = request.data["subject"]
@@ -61,7 +62,7 @@ def AddTemplateView(request):
 @permission_classes([IsAuthenticated])
 def AllTemplateView(request):
     if request.method == 'GET':
-        templates = Template.objects.all().order_by("-pub_date")
+        templates = Template.objects.filter(app_user__user=request.user).order_by("-pub_date")
 
         serializer = TemplateSerializer(templates, many=True)
         if serializer:
@@ -76,7 +77,7 @@ def AllTemplateView(request):
 @permission_classes([IsAuthenticated])
 def GetTemplateView(request, template_id):
     if request.method == 'GET':
-        template = Template.objects.get(id=template_id)
+        template = Template.objects.get(id=template_id, app_user__user=request.user)
 
         serializer = TemplateSerializer(template)
         if serializer:
@@ -96,7 +97,7 @@ def UpdateTemplateView(request, template_id):
         subject = request.data["subject"]
         body = request.data["body"]
 
-        template = Template.objects.get(id=template_id)
+        template = Template.objects.get(id=template_id, app_user__user=request.user)
         template.template_name = template_name
         template.subject = subject
         template.body = body
@@ -124,7 +125,7 @@ def UpdateTemplateView(request, template_id):
 def DeleteTemplateView(request, template_id):
     if request.method == 'DELETE':
 
-        template = Template.objects.get(id=template_id)
+        template = Template.objects.get(id=template_id, app_user__user=request.user)
         template.status = False
         template.save()
 
