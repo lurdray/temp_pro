@@ -76,20 +76,21 @@ WSGI_APPLICATION = 'temp_pro.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+#SESSION_ENGINE = 'django_mongoengine.sessions'
+#SESSION_SERIALIZER = 'django_mongoengine.sessions.BSONSerializer'
 
 
-client = pymongo.MongoClient("mongodb+srv://<username>:<password>@cluster0.2jybpmg.mongodb.net/?retryWrites=true&w=majority")
-db = client.test
-
-DATABASE = {
+DATABASES = {
     'default': {
         'ENGINE': 'djongo',
+        "NAME": "template",
+        'ENFORCE_SCHEMA': False,
         "CLIENT": {
-           "name": "template",
-           "host": "mongodb+srv://<username>:<password>@cluster0.2jybpmg.mongodb.net/?retryWrites=true&w=majority",
-           "username": "raytech",
-           "password": "rayray123",
-           "authMechanism": "SCRAM-SHA-1",
+           #"name": "template",
+           "host": "mongodb+srv://raytech:rayray123@cluster0.2jybpmg.mongodb.net/?retryWrites=true&w=majority",
+           #"username": "raytech",
+           #"password": "rayray123",
+           #"authMechanism": "SCRAM-SHA-1",
         }, 
     }
 }
