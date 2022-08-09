@@ -80,6 +80,12 @@ WSGI_APPLICATION = 'temp_pro.wsgi.application'
 #SESSION_SERIALIZER = 'django_mongoengine.sessions.BSONSerializer'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
